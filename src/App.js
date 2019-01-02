@@ -1,25 +1,41 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import UserConnexion from "./components/UserConnexion";
+import Home from "./components/Home";
+import { Redirect, Route, Switch } from "react-router-dom";
 
+const checkAuth = () => {
+  const token = sessionStorage.getItem("token");
+  if (!token) return false;
+  return true;
+};
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        checkAuth() ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to={{ pathname: "/" }} />
+        )
+      }
+    />
+  );
+};
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={props => <UserConnexion {...props} />}
+          />
+          <PrivateRoute path="/home" component={Home} />
+          <PrivateRoute path="/home/application" component={Home} />
+        </Switch>
       </div>
     );
   }
