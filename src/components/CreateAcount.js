@@ -3,34 +3,27 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
+import { connect } from "react-redux";
+import { createAccount } from "../actions/authActions";
+import url from "../utils/config";
 
-const url = " http://localhost:3001/api/register";
-class Login extends Component {
+class CreateAccount extends Component {
   state = {};
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
   onSubmitCreate = e => {
-    const { username, email, password } = this.state;
+    const { lastName, firstName, email, password } = this.state;
     e.preventDefault();
     const userData = {
-      username,
+      lastName,
+      firstName,
       email,
       password
     };
-    // const options = {
-    //   method: 'POST',
-    //   data,
-    //   url,
-    // };
-    // axios(options).then(result => console.log(result))
 
-    axios.post(url, userData).then(res => {
-      //localStorage.setItem("token", res.headers["x-access-token"]);
-
-      sessionStorage.setItem("token", res.headers["x-access-token"]);
-      this.props.history.push(`/home`);
-    });
+    const { createAccount } = this.props;
+    createAccount(userData, this.props);
   };
 
   render() {
@@ -41,7 +34,18 @@ class Login extends Component {
             <TextField
               id="outlined-name"
               label="Name"
-              name="username"
+              name="lastName"
+              value={this.state.name}
+              onChange={this.handleChange}
+              margin="normal"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="outlined-name"
+              label="FirstName"
+              name="firstName"
               value={this.state.name}
               onChange={this.handleChange}
               margin="normal"
@@ -53,8 +57,7 @@ class Login extends Component {
               id="outlined-email-input"
               label="Email"
               type="email"
-              name="email"
-              // autoComplete="email"
+              name="email" // autoComplete="email"
               value={this.state.email}
               onChange={this.handleChange}
               margin="normal"
@@ -68,8 +71,7 @@ class Login extends Component {
               name="password"
               type="password"
               value={this.state.password}
-              onChange={this.handleChange}
-              // autoComplete="current-password"
+              onChange={this.handleChange} // autoComplete="current-password"
               margin="normal"
               variant="outlined"
             />
@@ -85,4 +87,7 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(
+  null,
+  { createAccount }
+)(CreateAccount);

@@ -3,8 +3,12 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
+import { connect } from "react-redux";
+import { login } from "../actions/authActions";
+import FaceBook from "./FaceBook";
+import Google from "./Google";
+import url from "../utils/config";
 
-const url = " http://localhost:3001/api/login";
 class Login extends Component {
   state = {};
   handleChange = event => {
@@ -17,11 +21,9 @@ class Login extends Component {
       email,
       password
     };
-    axios.post(url, data).then(res => {
-      //localStorage.setItem("token", res.headers["x-access-token"]);
-      sessionStorage.setItem("token", res.headers["x-access-token"]);
-      this.props.history.push(`/home`);
-    });
+    const { login } = this.props;
+    login(data, this.props);
+     
   };
 
   render() {
@@ -34,8 +36,9 @@ class Login extends Component {
               label="Email"
               type="email"
               name="email"
-              // autoComplete="email"
-              value={this.state.email}
+              value={
+                this.state.email // autoComplete="email"
+              }
               onChange={this.handleChange}
               margin="normal"
               variant="outlined"
@@ -49,15 +52,22 @@ class Login extends Component {
               type="password"
               value={this.state.password}
               onChange={this.handleChange}
-              // autoComplete="current-password"
               margin="normal"
               variant="outlined"
-            />
+            />{" "}
           </Grid>
-          <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary">
-              Se connecter
-            </Button>
+          <Grid item container xs={12} spacing={24}>
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary">
+                Se connecter
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <FaceBook {...this.props} />
+            </Grid>
+            <Grid item xs={12}>
+              <Google {...this.props} />
+            </Grid>
           </Grid>
         </Grid>
       </form>
@@ -65,4 +75,7 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(
+  null,
+  { login }
+)(Login);

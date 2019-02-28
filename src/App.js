@@ -1,28 +1,17 @@
 import React, { Component } from "react";
 import "./App.css";
 import UserConnexion from "./components/UserConnexion";
+import { connect } from "react-redux";
 import Home from "./components/Home";
+import authRequire from "./utils/authRequire";
 import { Redirect, Route, Switch } from "react-router-dom";
+import queryString from "query-string";
+import { checkAuth } from "./actions/authActions";
+import axios from "axios";
+import url from "./utils/config";
+import PrivateRoute from "./utils/authRequire";
+import Application from "./components/Application";
 
-const checkAuth = () => {
-  const token = sessionStorage.getItem("token");
-  if (!token) return false;
-  return true;
-};
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={props =>
-        checkAuth() ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to={{ pathname: "/" }} />
-        )
-      }
-    />
-  );
-};
 class App extends Component {
   render() {
     return (
@@ -33,12 +22,18 @@ class App extends Component {
             path="/"
             render={props => <UserConnexion {...props} />}
           />
-          <PrivateRoute path="/home" component={Home} />
-          <PrivateRoute path="/home/application" component={Home} />
+          <Route exact path="/home" component={PrivateRoute(Home)} />
+          <Route
+            path="/home/application"
+            component={PrivateRoute(Application)}
+          />
         </Switch>
       </div>
     );
   }
 }
 
-export default App;
+export default connect(
+  null,
+  { checkAuth }
+)(App);
